@@ -14,5 +14,9 @@
   "scripts": {
     "build": "tsc --build",
     "typecheck": "tsc --build --noEmit"
+  },
+  "dependencies": {
+    "@commit-garden/garden-renderer": "workspace:*",
+    "@commit-garden/shared-types": "workspace:*"
   }
 }

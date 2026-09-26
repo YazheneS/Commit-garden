@@ -60,7 +60,14 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared-types
 
-  packages/design-system: {}
+  packages/design-system:
+    dependencies:
+      '@commit-garden/garden-renderer':
+        specifier: workspace:*
+        version: link:../garden-renderer
+      '@commit-garden/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
 
   packages/garden-engine:
     dependencies:

@@ -47,12 +47,7 @@ export type {
 
 // Camera
 export { createCamera, DEFAULT_CAMERA_CONFIG } from "./camera.js";
-export type {
-  Camera,
-  CameraState,
-  CameraConfig,
-  Point2D,
-} from "./camera.js";
+export type { Camera, CameraState, CameraConfig, Point2D } from "./camera.js";
 
 // Mock fixture (for tests and UI scaffolding)
 export { MOCK_GARDEN_STATE } from "./mock.js";
@@ -70,4 +65,3 @@ export type {
   SpriteAnimation,
   AnimationFrame,
 } from "@commit-garden/pixel-assets";
-
