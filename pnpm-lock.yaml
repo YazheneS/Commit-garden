@@ -70,6 +70,9 @@ importers:
 
   packages/garden-renderer:
     dependencies:
+      '@commit-garden/pixel-assets':
+        specifier: workspace:*
+        version: link:../pixel-assets
       '@commit-garden/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -80,7 +83,11 @@ importers:
         specifier: workspace:*
         version: link:../shared-types
 
-  packages/pixel-assets: {}
+  packages/pixel-assets:
+    dependencies:
+      '@commit-garden/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
 
   packages/shared-types: {}
 

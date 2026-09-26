@@ -94,6 +94,41 @@ export type RenderEffect = {
   ttlMs?: number;
 };
 
+// ─── Day / Night Cycle ────────────────────────────────────────────────────────
+
+export type TimeOfDay = "DAWN" | "DAY" | "DUSK" | "NIGHT";
+
+export type DayNightState = {
+  readonly timeOfDay: TimeOfDay;
+  /** Normalized progress through the current 24-hour cycle (0.0 to 1.0). */
+  readonly progress: number;
+  /** Ambient light tint color (CSS hex). */
+  readonly ambientColor: string;
+  /** Ambient light intensity: 0.0 (pitch dark) to 1.0 (full daylight). */
+  readonly ambientIntensity: number;
+  /** Opacity for a rendering overlay tint: 0.0 (none) to 0.6. */
+  readonly overlayOpacity: number;
+};
+
+// ─── Creatures ────────────────────────────────────────────────────────────────
+
+export type CreatureKind = "BUTTERFLY" | "FIREFLY";
+
+export type RenderCreature = {
+  readonly id: string;
+  readonly kind: CreatureKind;
+  /** Pixel x position in world space. */
+  readonly worldX: number;
+  /** Pixel y position in world space. */
+  readonly worldY: number;
+  /** Current animation frame index. */
+  readonly frame: number;
+  /** Opacity / glow factor (0.0 to 1.0). */
+  readonly alpha: number;
+  /** Asset key for sprite resolution (e.g. "creature.butterfly"). */
+  readonly assetKey: string;
+};
+
 // ─── Viewport / Camera ────────────────────────────────────────────────────────
 
 export type Viewport = {
@@ -119,4 +154,8 @@ export type GardenRenderState = {
   plants: RenderPlant[];
   /** Active visual effects. */
   effects: RenderEffect[];
+  /** Active garden creatures (butterflies, fireflies). */
+  creatures?: RenderCreature[] | undefined;
+  /** Current ambient lighting and day/night state. */
+  dayNight?: DayNightState | undefined;
 };

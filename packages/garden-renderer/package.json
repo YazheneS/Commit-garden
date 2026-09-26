@@ -16,6 +16,7 @@
     "typecheck": "tsc --build --noEmit"
   },
   "dependencies": {
-    "@commit-garden/shared-types": "workspace:*"
+    "@commit-garden/shared-types": "workspace:*",
+    "@commit-garden/pixel-assets": "workspace:*"
   }
 }

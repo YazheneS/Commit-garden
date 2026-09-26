@@ -6,7 +6,8 @@
     "composite": true
   },
   "references": [
-    { "path": "../shared-types" }
+    { "path": "../shared-types" },
+    { "path": "../pixel-assets" }
   ],
   "include": ["src"]
 }

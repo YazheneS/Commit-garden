@@ -17,6 +17,8 @@ import type {
   RenderGrowthStage,
   RenderHealthState,
   TileVariant,
+  RenderCreature,
+  DayNightState,
 } from "./types.js";
 import { TILE_SIZE } from "./types.js";
 
@@ -36,6 +38,12 @@ export const DEFAULT_RENDER_CONFIG: RenderConfig = {
   gridWidth: 10,
   gridHeight: 6,
   tileOverrides: [],
+};
+
+export type RenderOptions = {
+  effects?: GardenRenderState["effects"] | undefined;
+  creatures?: RenderCreature[] | undefined;
+  dayNight?: DayNightState | undefined;
 };
 
 // ─── Domain plant shape (minimal — only fields the renderer needs) ────────────
@@ -58,16 +66,26 @@ export type PlantLike = {
 /**
  * Convert an array of domain plants into a complete GardenRenderState.
  *
- * @param plants  Domain plants (must have grid positions already assigned).
- * @param config  Grid dimensions and optional tile overrides.
- * @param effects Optional pre-built effects to include.
+ * @param plants           Domain plants (must have grid positions already assigned).
+ * @param config           Grid dimensions and optional tile overrides.
+ * @param effectsOrOptions Optional effects array or RenderOptions configuration.
  */
 export function buildRenderState(
   plants: readonly PlantLike[],
   config: RenderConfig = DEFAULT_RENDER_CONFIG,
-  effects: GardenRenderState["effects"] = [],
+  effectsOrOptions: GardenRenderState["effects"] | RenderOptions = [],
 ): GardenRenderState {
   const { gridWidth, gridHeight, tileOverrides = [] } = config;
+
+  const effects = Array.isArray(effectsOrOptions)
+    ? effectsOrOptions
+    : (effectsOrOptions.effects ?? []);
+  const creatures = Array.isArray(effectsOrOptions)
+    ? undefined
+    : effectsOrOptions.creatures;
+  const dayNight = Array.isArray(effectsOrOptions)
+    ? undefined
+    : effectsOrOptions.dayNight;
 
   // Build override lookup: "col,row" → variant
   const overrideMap = new Map<string, TileVariant>(
@@ -114,13 +132,22 @@ export function buildRenderState(
     // Painter's order: top rows first, left-to-right within each row
     .sort((a, b) => a.row - b.row || a.col - b.col);
 
-  return {
+  const result: GardenRenderState = {
     gridWidth,
     gridHeight,
     terrain,
     plants: renderPlants,
     effects,
   };
+
+  if (creatures !== undefined) {
+    result.creatures = creatures;
+  }
+  if (dayNight !== undefined) {
+    result.dayNight = dayNight;
+  }
+
+  return result;
 }
 
 // ─── Stage / health coercions ─────────────────────────────────────────────────

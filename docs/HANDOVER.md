@@ -1,9 +1,9 @@
 # GitHub Garden — Handover Document
 
 **Date:** 2026-09-26
-**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 partial (TASK-010 Renderer Prototype)
-**Tasks completed:** TASK-001 through TASK-010 (10 of 43)
-**Test suite:** 303 tests passing across 11 test files, 0 failures
+**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 partial (TASK-010 through TASK-012)
+**Tasks completed:** TASK-001 through TASK-012 (12 of 43)
+**Test suite:** 362 tests passing across 16 test files, 0 failures
 
 ---
 
@@ -20,10 +20,10 @@ apps/
 packages/
   shared-types/     All domain TypeScript contracts + runtime guards
   garden-engine/    Core domain logic — the source of truth
-  garden-renderer/  Pixel-art render state + Camera abstraction
+  garden-renderer/  Pixel-art render state, Camera, and Animation systems
   github-client/    GitHub API integration (scaffold only)
   design-system/    Shared UI components (scaffold only)
-  pixel-assets/     Sprite sheets + asset manifests (scaffold only)
+  pixel-assets/     Sprite sheets, animation frames, and asset manifests
 
 services/
   api/          Backend REST service (scaffold only)
@@ -472,6 +472,47 @@ Pre-built 10×6 garden with 6 plants (oak/MATURE, cherry/FLOWERING, flower/SPROU
 
 ---
 
+### TASK-011 — Sprite System ✅
+
+**Packages:** `packages/pixel-assets`, `packages/garden-renderer`
+
+**Files:**
+- `packages/pixel-assets/src/types.ts` — `SpriteType`, `SpriteMetadata`, `AnimationFrame`, `SpriteAnimation`, `PlantSpriteMetadata`, `TileSpriteMetadata`
+- `packages/pixel-assets/src/animation.ts` — `createAnimation`, `getAnimationFrame`, `getAnimationFrameIndex`
+- `packages/pixel-assets/src/manifest.ts` — `BUILTIN_SPRITES`, `BUILTIN_PLANT_SPRITES`, `BUILTIN_TILE_SPRITES`, `BUILTIN_OTHER_SPRITES`
+- `packages/pixel-assets/src/registry.ts` — `SpriteRegistry`, `resolvePlantSprite`, `getSprite`, `formatPlantAssetKey`
+- `packages/garden-renderer/src/sprites.ts` — `getPlantSprite`, `getTileSprite`, `getSpriteForAssetKey`
+
+**Behaviour:**
+- Central asset registry mapping asset IDs (e.g. `oak.MATURE`, `tile.GRASS`, `creature.butterfly`) to frame metadata (`spriteSheet`, `frame`, `width`, `height`, anchor)
+- Complete coverage for all 5 built-in plant species across all developmental stages (22 base stages) plus health state variants (`WILTED`, `DORMANT`)
+- Pure, deterministic animation frame sampler (`getAnimationFrame`) handling looping and non-looping animations
+- Decoupled lookup in `garden-renderer` resolving `RenderPlant` and `TerrainTile` directly to sprite assets
+
+**Tests:** 54 tests across 4 test files (`pixel-assets/animation.test.ts` [12], `pixel-assets/manifest.test.ts` [7], `pixel-assets/registry.test.ts` [17], `garden-renderer/sprites.test.ts` [8])
+
+---
+
+### TASK-012 — Garden Animation ✅
+
+**Package:** `packages/garden-renderer`
+
+**Files:**
+- `packages/garden-renderer/src/animation.ts` — `getDayNightState`, `samplePlantSway`, `createGrowthAnimation`, `sampleGrowthAnimation`, `createButterfly`, `createFirefly`, `sampleCreature`, `updateCreatures`
+- `packages/garden-renderer/src/types.ts` — `TimeOfDay`, `DayNightState`, `CreatureKind`, `RenderCreature`, updated `GardenRenderState`
+- `packages/garden-renderer/src/render-state.ts` — extended `buildRenderState` to accept `RenderOptions` (`creatures`, `dayNight`)
+
+**Behaviour:**
+- **Plant growth animation:** `createGrowthAnimation` / `sampleGrowthAnimation` computes smooth, lightweight scale and pop bounces when plants advance stages
+- **Plant idle sway:** `samplePlantSway` provides gentle sinusoidal horizontal swaying for mature plants with position-derived phase offsets to avoid synchronous movement
+- **Ambient creatures:** Butterflies flutter during daylight/dawn/dusk; fireflies drift with pulsing glow alpha at night
+- **Day/night cycle:** `getDayNightState` maps 24-hour cycle to ambient light colors, intensity, and overlay tinting (`DAWN`, `DAY`, `DUSK`, `NIGHT`)
+- Pure mathematical samplers with zero CPU/DOM rendering overhead
+
+**Tests:** 15 tests in `packages/garden-renderer/src/animation.test.ts`
+
+---
+
 ## 5. Architecture decisions made
 
 | Decision | Rationale |
@@ -486,6 +527,9 @@ Pre-built 10×6 garden with 6 plants (oak/MATURE, cherry/FLOWERING, flower/SPROU
 | `OVERFLOW_POSITION = {x:-1, y:-1}` sentinel | Graceful overflow without crashing; visible in debugging |
 | Species stages data-driven per species | Allows mushroom/cactus/flower to have different paths from oak |
 | Achievement rewards unlock visual content | Per PRD — not purely cosmetic badges |
+| Asset key = `"{speciesId}.{growthStage}"` | Established format for sprite registry lookups with optional `.{health}` fallback |
+| Pure mathematical animation samplers | Zero CPU overhead, no DOM/canvas coupling, easy to test |
+| Position-derived phase offsets for sway | Prevents unnatural uniform swaying across neighboring plants |
 
 ---
 
@@ -494,9 +538,7 @@ Pre-built 10×6 garden with 6 plants (oak/MATURE, cherry/FLOWERING, flower/SPROU
 The following tasks remain from TASKS.md:
 
 **Phase 2 — Pixel Garden (partial):**
-- TASK-011 — Sprite System (sprite registry, metadata, animation frames)
-- TASK-012 — Garden Animation (growth animation, idle, butterfly/firefly, day/night)
-- TASK-013 — Garden UI (garden screen with streak, active weeks, next milestone)
+- TASK-013 — Garden UI (garden screen with streak, active weeks, next milestone, recent event)
 
 **Phase 3 — Backend:**
 - TASK-014 — Database Schema (PostgreSQL tables: users, gardens, plants, events…)
@@ -528,9 +570,14 @@ The following tasks remain from TASKS.md:
 | `garden-engine` | `achievements.test.ts` | 31 |
 | `garden-renderer` | `render-state.test.ts` | 21 |
 | `garden-renderer` | `camera.test.ts` | 26 |
-| **Total** | **11 files** | **303** |
+| `garden-renderer` | `sprites.test.ts` | 8 |
+| `garden-renderer` | `animation.test.ts` | 15 |
+| `pixel-assets` | `animation.test.ts` | 12 |
+| `pixel-assets` | `manifest.test.ts` | 7 |
+| `pixel-assets` | `registry.test.ts` | 17 |
+| **Total** | **16 files** | **362** |
 
-All 303 tests pass. Zero failures.
+All 362 tests pass. Zero failures.
 
 ---
 
@@ -538,13 +585,13 @@ All 303 tests pass. Zero failures.
 
 The natural continuation follows the task list in order:
 
-1. **TASK-011 (Sprite System)** — define asset registry in `packages/pixel-assets`, wire sprite metadata into `packages/garden-renderer`. This unblocks actual visual rendering.
+1. **TASK-013 (Garden UI)** — connect the renderer to a web/desktop UI component, display mock data (streak, active weeks, next milestone, recent garden event).
 
-2. **TASK-012 (Garden Animation)** — idle animations, growth transitions, butterfly/firefly effects.
+2. **TASK-014 (Database Schema)** — PostgreSQL schema, migrations for relational persistence.
 
-3. **TASK-013 (Garden UI)** — connect the renderer to a web/desktop UI component, display mock data.
+3. **TASK-015 (API Foundation)** — authenticated REST endpoints.
 
-4. **TASK-014 (Database Schema)** — PostgreSQL schema, migrations with a tool like `node-postgres` or `drizzle-orm`.
+4. **TASK-016 (Persistence and Sync)** — transactional updates and idempotent sync.
 
 5. **TASK-017 (GitHub Auth)** — GitHub OAuth in the API service. Unblocks TASK-018 and everything that follows.
 
@@ -576,6 +623,6 @@ None of these are committed to the repository.
 |---|---|
 | `pnpm lint` takes ~90s | ESLint uses typed rules (`projectService`) which requires full TS compilation. Not a failure — just slow on first run. Subsequent runs are faster. |
 | Scaffold packages (`apps/*`, `services/api`, `packages/github-client`, etc.) export only `export {}` | These are intentional stubs. Do not add real code until the corresponding task is started. |
-| `garden-renderer` has no canvas/draw code yet | TASK-010 intentionally stops at the data layer. Actual pixel rendering starts in TASK-011 when sprite assets exist. |
+| `garden-renderer` has no canvas/draw code yet | The renderer layer (TASK-010–012) is intentionally headless — pure TypeScript data and math with no canvas coupling. Actual draw calls to a canvas surface will be wired in TASK-013 (Garden UI). |
 | Placement overflow (`OVERFLOW_POSITION`) | Currently logs nothing — callers should inspect `overflowPlants` and warn if non-empty. The 10×6 default grid supports 60 plants; the PRD's default milestones top out at 8 plants for a full-year user. |
 | Achievement registry is module-level mutable state | Tests use `registerAchievementDefinition` freely. If test isolation becomes a problem, extract the registry into a class or factory. The same applies to the species registry in `progression.ts`. |
