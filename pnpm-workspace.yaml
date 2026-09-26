@@ -1,0 +1,8 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "services/*"
+
+# Allow esbuild (used by vitest) to run its native binary install script
+allowBuilds:
+  esbuild: true

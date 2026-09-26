@@ -1,0 +1,14 @@
+{
+  "name": "@commit-garden/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --build --noEmit"
+  },
+  "dependencies": {
+    "@commit-garden/garden-renderer": "workspace:*",
+    "@commit-garden/shared-types": "workspace:*"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/shared-types" },
+    { "path": "./packages/garden-engine" },
+    { "path": "./packages/github-client" },
+    { "path": "./packages/garden-renderer" },
+    { "path": "./packages/design-system" },
+    { "path": "./packages/pixel-assets" },
+    { "path": "./services/api" },
+    { "path": "./apps/web" },
+    { "path": "./apps/desktop" },
+    { "path": "./apps/mobile" }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "commit-garden",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "GitHub Garden — a pixel-art ecosystem driven by GitHub coding consistency",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --build --force",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "tsc --build --clean"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/node": "^20.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
+    "eslint": "^9.25.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.29.0",
+    "vitest": "^2.1.0"
+  }
+}
