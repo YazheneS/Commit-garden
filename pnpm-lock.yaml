@@ -86,6 +86,9 @@ importers:
 
   packages/github-client:
     dependencies:
+      '@commit-garden/garden-engine':
+        specifier: workspace:*
+        version: link:../garden-engine
       '@commit-garden/shared-types':
         specifier: workspace:*
         version: link:../shared-types

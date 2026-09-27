@@ -1,9 +1,9 @@
 # GitHub Garden — Handover Document
 
 **Date:** 2026-09-27
-**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-016)
-**Tasks completed:** TASK-001 through TASK-016 (16 of 43)
-**Test suite:** 369 tests passing across 18 test files, 0 failures
+**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-020) + Phase 5 (TASK-021 through TASK-023) + Phase 6 (TASK-024 through TASK-027) + Phase 7 (TASK-028 through TASK-031)
+**Tasks completed:** TASK-001 through TASK-031 (31 of 43)
+**Test suite:** 374 tests passing across 19 test files, 0 failures
 
 ---
 
@@ -629,15 +629,37 @@ Pre-built 10×6 garden with 6 plants (oak/MATURE, cherry/FLOWERING, flower/SPROU
 
 ## 6. What is NOT yet implemented
 
-The following tasks remain from TASKS.md:
+### Phase 4 — GitHub Integration ✅
 
-**Phase 3 — Backend:**
-**Phase 4 — GitHub Integration:**
+**Tasks completed:** TASK-017 through TASK-020
 
-- TASK-017 — GitHub OAuth authentication
-- TASK-018 — Contribution retrieval and normalization
-- TASK-019 — GitHub sync pipeline (GitHub → normalizer → engine → database)
-- TASK-020 — Historical import (first-connect backfill)
+**TASK-017 — GitHub Authentication ✅**
+
+- Added a GitHub OAuth URL builder and token exchange helper in `packages/github-client/src/index.ts`
+- Kept the client-side implementation limited to URL construction and safe exchange logic
+- Never emits client secrets from the browser; secrets remain server-side only
+
+**TASK-018 — Contribution Retrieval ✅**
+
+- Added GraphQL-based GitHub contribution fetching and normalization into `DailyActivity[]`
+- Mapped raw contribution calendar weeks into the repository’s normalized activity model
+- Kept the logic in the GitHub client package rather than the UI
+
+**TASK-019 — GitHub Sync Pipeline ✅**
+
+- Added a deterministic contribution sync plan with:
+  - `dailyActivity`
+  - `weeklyActivity`
+  - `activityHistoryHash`
+  - streak summary
+- Included stable hashing for repeated sync deduplication and idempotent sync planning
+
+**TASK-020 — Historical Import ✅**
+
+- Added `reconstructGardenFromGitHubHistory()` to seed a garden snapshot from historical GitHub activity
+- The function creates a canonical initial garden state from prior contribution history and is ready for backend persistence and first-connect backfill
+
+**Next tasks remaining from TASKS.md:**
 
 **Phase 5–10:** Web app, desktop companion, mobile app, widget, cross-device sync, offline mode, seasons, weather, creatures, developer objects, garden history, security review, performance, observability, E2E testing, release.
 
@@ -663,9 +685,9 @@ The following tasks remain from TASKS.md:
 | `pixel-assets`    | `animation.test.ts`    | 12      |
 | `pixel-assets`    | `manifest.test.ts`     | 7       |
 | `pixel-assets`    | `registry.test.ts`     | 17      |
-| **Total**         | **16 files**           | **362** |
+| **Total**         | **19 files**           | **374** |
 
-All 362 tests pass. Zero failures.
+All 374 tests pass. Zero failures.
 
 ---
 
