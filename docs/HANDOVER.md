@@ -1,9 +1,9 @@
 # GitHub Garden — Handover Document
 
 **Date:** 2026-09-27
-**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-020) + Phase 5 (TASK-021 through TASK-023) + Phase 6 (TASK-024 through TASK-027) + Phase 7 (TASK-028 through TASK-031) + Phase 8 (TASK-032 through TASK-033) + Phase 9 (TASK-034 through TASK-038) + Phase 10 (TASK-039 through TASK-043)
-**Tasks completed:** TASK-001 through TASK-043 (43 of 43)
-**Test suite:** 380 tests passing across 21 test files, 0 failures
+**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-020) + Phase 5 (TASK-021 through TASK-023) + Phase 6 (TASK-024 through TASK-027) + Phase 7 (TASK-028 through TASK-031) + Phase 8 (TASK-032 through TASK-033) + Phase 9 (TASK-034 through TASK-038) + Phase 10 (TASK-039 through TASK-043) + Phase 11 implementation through TASK-048
+**Task status:** TASK-048 acceptance verified locally; strict follow-up marks TASK-044 verified and TASK-045 through TASK-047 partial. Do not treat TASK-049 as started.
+**Test suite:** 396 tests passing across 27 test files, 0 failures
 
 ---
 
@@ -13,14 +13,14 @@ The workspace is a **pnpm monorepo** at `c:\Users\YAZHENE\Documents\GitHub\Commi
 
 ```
 apps/
-  web/          Next.js web application (scaffold only)
+  web/          Web runtime and pixel garden scene (early runtime)
   desktop/      Tauri desktop companion (scaffold only)
   mobile/       React Native / Expo mobile (scaffold only)
 
 packages/
   shared-types/     All domain TypeScript contracts + runtime guards
   garden-engine/    Core domain logic — the source of truth
-  garden-renderer/  Pixel-art render state, Camera, and Animation systems
+  garden-renderer/  Pixel-art render state, scene output, Camera, and Animation systems
   github-client/    GitHub API integration (scaffold only)
   design-system/    Shared UI components (scaffold only)
   pixel-assets/     Sprite sheets, animation frames, and asset manifests
@@ -36,7 +36,7 @@ docs/
   PRD.md            Product Requirements Document
   ARCHITECTURE.md   System architecture
   AGENTS.md         Agent coding instructions
-  TASKS.md          Full task list (43 tasks)
+  TASKS.md          Full task list
   HANDOVER.md       This document
 ```
 
@@ -220,6 +220,21 @@ pnpm clean            # tsc --build --clean
 - Production documentation checklist including environment and release notes items
 
 **Acceptance criteria met:** the project has a clear deployment and release path for production rollout.
+
+---
+
+### TASK-044 through TASK-047 — Runtime Conversion (strict verification mixed)
+
+**What was built:**
+
+- Repository reality audit documenting the validated scaffold boundary
+- Web runtime page model with the garden as the primary experience
+- Renderer-owned HTML/CSS pixel-scene consuming `GardenRenderState`; current shapes/patterns are procedural CSS, not delivered sprite-sheet artwork
+- Pixel terrain, plant growth-stage silhouettes, health presentation, creature markers, responsive sizing, and CSS animation; camera/interactive zoom are not wired into the web screen
+- Web integration using the renderer scene rather than empty terrain and plant placeholders
+- Runnable Node HTTP API with health, authentication, CORS, JSON validation, and process entrypoint
+
+**Verification:** the API is runnable over HTTP and was exercised against PostgreSQL. The web page and transformed modules return HTTP 200, but browser DOM/visual rendering was not inspected. TASK-045 and TASK-046 remain partial pending browser-visible state verification and integration of actual pixel assets/camera interaction. TASK-048 persistence was verified locally; production OAuth and deployment remain unverified.
 
 ---
 

@@ -1,13 +1,24 @@
-import type { GardenEvent, Plant, User } from "@commit-garden/shared-types";
+import type {
+  Achievement,
+  GardenEvent,
+  Plant,
+  User,
+} from "@commit-garden/shared-types";
 import type { GardenProgress, GardenView } from "./types.js";
+import type { OAuthStore } from "./auth.js";
 
 export type PersistedGarden = GardenView["garden"];
 
 export type GardenRepository = {
-  getGarden(userId: string): GardenView | null;
-  getProgress(userId: string): GardenProgress | null;
-  getEvents(userId: string): readonly GardenEvent[] | null;
-  getUser(userId: string): User | null;
+  getGarden(userId: string): GardenView | null | Promise<GardenView | null>;
+  getProgress(
+    userId: string,
+  ): GardenProgress | null | Promise<GardenProgress | null>;
+  getEvents(
+    userId: string,
+  ): readonly GardenEvent[] | null | Promise<readonly GardenEvent[] | null>;
+  getUser(userId: string): User | null | Promise<User | null>;
+  persistGarden(view: GardenView): Promise<void>;
   transaction<T>(
     userId: string,
     callback: (transaction: GardenTransaction) => Promise<T> | T,
@@ -15,12 +26,13 @@ export type GardenRepository = {
 };
 
 export type GardenTransaction = {
-  getGarden(): GardenView;
-  hasAppliedSync(activityHistoryHash: string): boolean;
-  markSyncApplied(activityHistoryHash: string): void;
-  saveGarden(garden: PersistedGarden): void;
-  savePlants(plants: readonly Plant[]): void;
-  appendEvents(events: readonly GardenEvent[]): void;
+  getGarden(): GardenView | Promise<GardenView>;
+  hasAppliedSync(activityHistoryHash: string): boolean | Promise<boolean>;
+  markSyncApplied(activityHistoryHash: string): void | Promise<void>;
+  saveGarden(garden: PersistedGarden): void | Promise<void>;
+  savePlants(plants: readonly Plant[]): void | Promise<void>;
+  appendEvents(events: readonly GardenEvent[]): void | Promise<void>;
+  saveAchievements(achievements: readonly Achievement[]): void | Promise<void>;
 };
 
 type RepositoryState = {
@@ -28,6 +40,10 @@ type RepositoryState = {
   gardens: Map<string, PersistedGarden>;
   plants: Map<string, Plant>;
   events: Map<string, GardenEvent & { readonly id: string }>;
+  achievements: Map<string, Achievement>;
+  sessions: Map<string, { readonly userId: string; readonly expiresAt: Date }>;
+  mobileAuthCodes: Map<string, { readonly userId: string; readonly expiresAt: Date }>;
+  encryptedAccessTokens: Map<string, string>;
   syncFingerprints: Map<string, Set<string>>;
 };
 
@@ -37,6 +53,10 @@ function cloneState(state: RepositoryState): RepositoryState {
     gardens: new Map(state.gardens),
     plants: new Map(state.plants),
     events: new Map(state.events),
+    achievements: new Map(state.achievements),
+    sessions: new Map(state.sessions),
+    mobileAuthCodes: new Map(state.mobileAuthCodes),
+    encryptedAccessTokens: new Map(state.encryptedAccessTokens),
     syncFingerprints: new Map(
       [...state.syncFingerprints].map(([userId, hashes]) => [
         userId,
@@ -46,12 +66,16 @@ function cloneState(state: RepositoryState): RepositoryState {
   };
 }
 
-export class InMemoryGardenRepository implements GardenRepository {
+export class InMemoryGardenRepository implements GardenRepository, OAuthStore {
   private state: RepositoryState = {
     users: new Map(),
     gardens: new Map(),
     plants: new Map(),
     events: new Map(),
+    achievements: new Map(),
+    sessions: new Map(),
+    mobileAuthCodes: new Map(),
+    encryptedAccessTokens: new Map(),
     syncFingerprints: new Map(),
   };
 
@@ -70,6 +94,66 @@ export class InMemoryGardenRepository implements GardenRepository {
         },
       );
     }
+    for (const achievement of view.achievements) {
+      this.state.achievements.set(
+        `${view.garden.id}:${achievement.id}`,
+        achievement,
+      );
+    }
+  }
+
+  public async persistGarden(view: GardenView): Promise<void> {
+    this.seed(view);
+  }
+
+  public async saveGitHubAccount(
+    view: GardenView,
+    encryptedAccessToken: string,
+    _scopes: readonly string[],
+  ): Promise<string> {
+    this.seed(view);
+    this.state.encryptedAccessTokens.set(view.user.id, encryptedAccessToken);
+    return view.user.id;
+  }
+
+  public async createSession(
+    userId: string,
+    sessionHash: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    this.state.sessions.set(sessionHash, { userId, expiresAt });
+  }
+
+  public async resolveSession(sessionHash: string): Promise<string | null> {
+    const session = this.state.sessions.get(sessionHash);
+    if (!session || session.expiresAt.getTime() <= Date.now()) return null;
+    return session.userId;
+  }
+
+  public async deleteSession(sessionHash: string): Promise<void> {
+    this.state.sessions.delete(sessionHash);
+  }
+
+  public async getEncryptedAccessToken(userId: string): Promise<string | null> {
+    return this.state.encryptedAccessTokens.get(userId) ?? null;
+  }
+
+  public async createMobileAuthCode(
+    userId: string,
+    codeHash: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    this.state.mobileAuthCodes.set(codeHash, { userId, expiresAt });
+  }
+
+  public async consumeMobileAuthCode(
+    codeHash: string,
+    now: Date,
+  ): Promise<string | null> {
+    const entry = this.state.mobileAuthCodes.get(codeHash);
+    this.state.mobileAuthCodes.delete(codeHash);
+    if (!entry || entry.expiresAt.getTime() <= now.getTime()) return null;
+    return entry.userId;
   }
 
   public getGarden(userId: string): GardenView | null {
@@ -130,8 +214,9 @@ export class InMemoryGardenRepository implements GardenRepository {
           hashes.add(activityHistoryHash);
           this.state.syncFingerprints.set(userId, hashes);
         },
-        saveGarden: (updatedGarden) =>
-          this.state.gardens.set(userId, updatedGarden),
+        saveGarden: (updatedGarden) => {
+          this.state.gardens.set(userId, updatedGarden);
+        },
         savePlants: (plants) => {
           for (const plant of plants) this.state.plants.set(plant.id, plant);
         },
@@ -139,6 +224,14 @@ export class InMemoryGardenRepository implements GardenRepository {
           for (const event of events) {
             const id = `${garden.garden.id}:${event.occurredAt}:${event.type}:${this.state.events.size}`;
             this.state.events.set(id, { ...event, id });
+          }
+        },
+        saveAchievements: (achievements) => {
+          for (const achievement of achievements) {
+            this.state.achievements.set(
+              `${garden.garden.id}:${achievement.id}`,
+              achievement,
+            );
           }
         },
       };
@@ -160,6 +253,9 @@ export class InMemoryGardenRepository implements GardenRepository {
       .filter((event) => event.id.startsWith(`${garden.id}:`))
       .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt))
       .map(({ id: _id, ...event }) => event);
-    return { user, garden, plants, events, achievements: [] };
+    const achievements = [...this.state.achievements.values()].filter(
+      (achievement) => achievement.gardenId === garden.id,
+    );
+    return { user, garden, plants, events, achievements };
   }
 }

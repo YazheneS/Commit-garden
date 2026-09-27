@@ -37,6 +37,8 @@ export type {
   Achievement,
 } from "./achievement.js";
 
+export type { GardenView, GardenProgress } from "./api.js";
+
 // Runtime type guards (not type-only — these are real values)
 export {
   isCalendarDate,

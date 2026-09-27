@@ -36,6 +36,18 @@ export type GitHubTokenResponse = {
   readonly refreshToken?: string;
 };
 
+export class GitHubApiError extends Error {
+  public constructor(
+    message: string,
+    public readonly status: number,
+    public readonly rateLimitResetAt?: string,
+    public readonly isRateLimit = status === 429,
+  ) {
+    super(message);
+    this.name = "GitHubApiError";
+  }
+}
+
 export type GitHubContributionQuery = {
   readonly username: string;
   readonly accessToken: string;
@@ -187,8 +199,17 @@ export async function fetchGitHubContributionData(
   });
 
   if (!response.ok) {
-    throw new Error(
+    const reset = response.headers.get("x-ratelimit-reset");
+    const resetSeconds = reset ? Number(reset) : Number.NaN;
+    const resetDate = new Date(resetSeconds * 1000);
+    const rateLimitResetAt = Number.isFinite(resetDate.getTime())
+      ? resetDate.toISOString()
+      : undefined;
+    throw new GitHubApiError(
       `GitHub contribution query failed with status ${response.status}.`,
+      response.status,
+      rateLimitResetAt,
+      response.status === 429 || response.headers.get("x-ratelimit-remaining") === "0",
     );
   }
 
@@ -211,9 +232,11 @@ export async function fetchGitHubContributionData(
   };
 
   if (payload.errors?.length) {
-    throw new Error(
-      payload.errors[0]?.message ?? "GitHub GraphQL contribution query failed.",
-    );
+    const message = payload.errors[0]?.message ?? "GitHub GraphQL contribution query failed.";
+    if (/rate limit/i.test(message)) {
+      throw new GitHubApiError(message, 429, undefined, true);
+    }
+    throw new GitHubApiError(message, 502);
   }
 
   const days =

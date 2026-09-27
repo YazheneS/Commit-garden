@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { GardenView } from "./types.js";
 import { createApiServer } from "./api.js";
 import { InMemoryGardenRepository } from "./repository.js";
+import { GitHubApiError } from "@commit-garden/github-client";
 
 const initialView: GardenView = {
   user: {
@@ -93,6 +94,7 @@ describe("API foundation", () => {
     const firstBody = first.body as {
       alreadyApplied: boolean;
       createdPlantIds: string[];
+      createdAchievementIds: string[];
     };
     const secondBody = second.body as {
       alreadyApplied: boolean;
@@ -107,13 +109,63 @@ describe("API foundation", () => {
     expect(secondBody.createdPlantIds).toHaveLength(0);
     expect(view?.garden.gardenVersion).toBe(1);
     expect(view?.plants).toHaveLength(1);
+    expect(firstBody.createdAchievementIds).toEqual(["first-week"]);
+    expect(view?.achievements.map((achievement) => achievement.id)).toEqual([
+      "first-week",
+    ]);
+  });
+
+  it("uses server-fetched contribution history and reports GitHub rate limits", async () => {
+    const repository = new InMemoryGardenRepository();
+    repository.seed(initialView);
+    const api = createApiServer(
+      repository,
+      () => "user-1",
+      {
+        now: () => new Date("2026-09-27T12:00:00.000Z"),
+        syncContributions: async () => ({
+          activityHistoryHash: "server-history",
+          weeks: [activeWeek],
+        }),
+      },
+    );
+    const result = await api.handle({
+      method: "POST",
+      path: "/sync",
+      body: { activityHistoryHash: "forged", weeks: [], now: "invalid" },
+    });
+    expect(result.status).toBe(200);
+    expect(repository.getGarden("user-1")?.garden.activeWeeks).toBe(1);
+
+    const limitedApi = createApiServer(repository, () => "user-1", {
+      syncContributions: async () => {
+        throw new GitHubApiError(
+          "rate limited",
+          403,
+          "2026-09-27T13:00:00.000Z",
+          true,
+        );
+      },
+    });
+    const limited = await limitedApi.handle({
+      method: "POST",
+      path: "/sync",
+    });
+    expect(limited.status).toBe(429);
+    expect(limited.body).toMatchObject({
+      error: "GitHub rate limit reached. Try again later.",
+      retryAt: "2026-09-27T13:00:00.000Z",
+    });
   });
 
   it("rolls back a failed transaction", async () => {
     const { repository } = createFixture();
     await expect(
-      repository.transaction("user-1", (transaction) => {
-        transaction.saveGarden({ ...initialView.garden, gardenVersion: 99 });
+      repository.transaction("user-1", async (transaction) => {
+        await transaction.saveGarden({
+          ...initialView.garden,
+          gardenVersion: 99,
+        });
         throw new Error("forced failure");
       }),
     ).rejects.toThrow("forced failure");

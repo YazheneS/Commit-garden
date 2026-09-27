@@ -9,6 +9,11 @@
     "pnpm": ">=9"
   },
   "scripts": {
+    "dev": "pnpm --filter @commit-garden/web dev",
+    "dev:api": "pnpm --filter @commit-garden/api dev",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @commit-garden/api build && pnpm --filter @commit-garden/api migrate",
     "lint": "eslint .",
     "typecheck": "tsc --build --force",
     "test": "vitest run",

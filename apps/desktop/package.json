@@ -4,11 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc --build",
+    "build:frontend": "node scripts/build-frontend.mjs",
+    "build:tauri": "tauri build",
+    "dev:tauri": "tauri dev",
+    "build": "pnpm build:frontend && pnpm build:tauri",
     "typecheck": "tsc --build --noEmit"
   },
   "dependencies": {
     "@commit-garden/garden-renderer": "workspace:*",
     "@commit-garden/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.5",
+    "esbuild": "0.21.5"
   }
 }

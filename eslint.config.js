@@ -14,6 +14,8 @@ export default tseslint.config(
     ignores: [
       "**/dist/**",
       "**/node_modules/**",
+      "apps/desktop/frontend/**",
+      "**/*.d.ts",
       "**/*.js.map",
       "coverage/**",
     ],
@@ -28,7 +30,7 @@ export default tseslint.config(
           // Root-level config files (vitest.config.ts etc.) live outside any
           // package tsconfig; allow the project service to fall back to the
           // nearest tsconfig for them rather than erroring.
-          allowDefaultProject: ["*.ts", "*.tsx"],
+          allowDefaultProject: ["*.ts", "*.tsx", "apps/mobile/src/index.tsx"],
           defaultProject: "./tsconfig.node.json",
         },
         tsconfigRootDir: import.meta.dirname,
@@ -58,6 +60,14 @@ export default tseslint.config(
         "error",
         { prefer: "type-imports", fixStyle: "inline-type-imports" },
       ],
+    },
+  },
+
+  // Node globals in the CommonJS Expo config.
+  {
+    files: ["apps/mobile/babel.config.cjs"],
+    languageOptions: {
+      globals: { module: "readonly" },
     },
   },
 );

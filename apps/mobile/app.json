@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "GitHub Garden",
+    "slug": "github-garden",
+    "scheme": "commitgarden",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.commitgarden.mobile" },
+    "android": { "package": "com.commitgarden.mobile" },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-widgets",
+        {
+          "groupIdentifier": "group.com.commitgarden.mobile",
+          "widgets": [
+            {
+              "name": "GardenWidget",
+              "displayName": "My Garden",
+              "description": "See your garden and week streak at a glance.",
+              "ios": { "supportedFamilies": ["systemSmall", "systemMedium"] }
+            }
+          ]
+        }
+      ],
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "GardenWidget",
+              "label": "My Garden",
+              "description": "See your garden and week streak at a glance.",
+              "minWidth": "250dp",
+              "minHeight": "160dp",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ]
+    ],
+    "extra": { "apiBaseUrl": "http://localhost:4000" }
+  }
+}

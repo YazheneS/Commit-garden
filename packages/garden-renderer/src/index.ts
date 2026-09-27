@@ -59,6 +59,9 @@ export {
   getSpriteForAssetKey,
 } from "./sprites.js";
 export type { PlantSpriteQuery } from "./sprites.js";
+export { renderPixelGardenHtml, selectSpriteFrame } from "./pixel-scene.js";
+export type { SpriteFrameSelection } from "./pixel-scene.js";
+export type { PixelSceneOptions } from "./pixel-scene.js";
 export type {
   SpriteMetadata,
   SpriteType,

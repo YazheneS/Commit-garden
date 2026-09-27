@@ -1,5 +1,49 @@
-import { MOCK_GARDEN_STATE } from "@commit-garden/garden-renderer";
+import {
+  MOCK_GARDEN_STATE,
+  renderPixelGardenHtml,
+} from "@commit-garden/garden-renderer";
 import type { GardenRenderState } from "@commit-garden/garden-renderer";
+
+export type WebRuntimeConfig = {
+  readonly apiBaseUrl?: string;
+  readonly initialGarden?: GardenRenderState;
+};
+
+export type WebRuntime = {
+  readonly appName: string;
+  readonly status: "ready" | "loading" | "error";
+  readonly apiBaseUrl: string;
+  readonly initialGarden: GardenRenderState;
+};
+
+export type WebGardenPageInput = {
+  readonly currentStreak: number;
+  readonly activeWeeks: number;
+  readonly nextMilestone: number;
+  readonly recentEvent?: string | null;
+  readonly garden: GardenRenderState;
+};
+
+export function createWebRuntime(config: WebRuntimeConfig = {}): WebRuntime {
+  const apiBaseUrl = config.apiBaseUrl ?? "http://localhost:4000";
+
+  return {
+    appName: "GitHub Garden",
+    status: "ready",
+    apiBaseUrl,
+    initialGarden: config.initialGarden ?? MOCK_GARDEN_STATE,
+  };
+}
+
+export function createWebGardenScreen(garden: GardenRenderState): string {
+  return `<div class="garden-screen" data-testid="garden-screen"><header class="hud-bar"><div class="stat-badge">GITHUB GARDEN</div></header>${renderPixelGardenHtml(garden, { className: "web-garden" })}</div>`;
+}
+
+export function resolveGardenPage(input: WebGardenPageInput): string {
+  const displayActiveWeeks = Math.max(0, input.currentStreak);
+  const countdown = Math.max(1, input.nextMilestone - input.activeWeeks);
+  return `<!DOCTYPE html><html><body><div class="garden-page"><h1>GITHUB GARDEN</h1><div class="garden-screen">${createWebGardenScreen(input.garden)}</div><div class="stat-summary"><p>${displayActiveWeeks} active weeks</p><p>Next growth: ${countdown} week${countdown === 1 ? "" : "s"}</p><p>${input.recentEvent ?? "No recent updates"}</p></div></div></body></html>`;
+}
 
 export type OnboardingStep = "welcome" | "connect" | "importing" | "garden";
 

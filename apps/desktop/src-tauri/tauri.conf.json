@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "GitHub Garden",
+  "version": "0.1.0",
+  "identifier": "com.commitgarden.desktop",
+  "build": {
+    "beforeDevCommand": "pnpm build:frontend",
+    "beforeBuildCommand": "pnpm build:frontend -- --production",
+    "frontendDist": "../frontend"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "GitHub Garden",
+        "width": 360,
+        "height": 520,
+        "minWidth": 320,
+        "minHeight": 440,
+        "resizable": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' asset: http://tauri.localhost; img-src 'self' asset: http://tauri.localhost data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self'; connect-src ipc: http://ipc.localhost http://localhost:4000 https://localhost:4000 https://api.github.com https://github.com"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Productivity",
+    "shortDescription": "A quiet garden companion for your GitHub activity",
+    "longDescription": "A pixel-art garden that grows with your coding activity."
+  }
+}

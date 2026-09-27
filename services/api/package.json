@@ -13,11 +13,18 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "typecheck": "tsc --build --noEmit"
+    "typecheck": "tsc --build --noEmit",
+    "dev": "pnpm build && node --env-file=../../.env dist/server.js",
+    "migrate": "node --env-file=../../.env dist/migrate.js",
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@commit-garden/garden-engine": "workspace:*",
     "@commit-garden/github-client": "workspace:*",
-    "@commit-garden/shared-types": "workspace:*"
+    "@commit-garden/shared-types": "workspace:*",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
   }
 }

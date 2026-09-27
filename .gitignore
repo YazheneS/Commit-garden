@@ -37,3 +37,6 @@ coverage/
 
 # Tauri build artifacts
 src-tauri/target/
+apps/desktop/frontend/
+apps/mobile/android/
+apps/mobile/ios/

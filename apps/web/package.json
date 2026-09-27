@@ -4,11 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc --build",
+    "dev": "vite --open",
+    "build": "tsc --build && vite build",
     "typecheck": "tsc --build --noEmit"
   },
   "dependencies": {
     "@commit-garden/garden-renderer": "workspace:*",
     "@commit-garden/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "5.4.21"
   }
 }

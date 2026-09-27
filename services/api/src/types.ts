@@ -1,27 +1,9 @@
 import type {
-  Achievement,
-  Garden,
-  GardenEvent,
-  Plant,
-  User,
+  GardenView,
   WeeklyActivity,
 } from "@commit-garden/shared-types";
 
-export type GardenView = {
-  readonly user: User;
-  readonly garden: Garden & { readonly gardenVersion: number };
-  readonly plants: readonly Plant[];
-  readonly events: readonly GardenEvent[];
-  readonly achievements: readonly Achievement[];
-};
-
-export type GardenProgress = {
-  readonly currentStreak: number;
-  readonly longestStreak: number;
-  readonly activeWeeks: number;
-  readonly gardenVersion: number;
-  readonly nextMilestone: number | null;
-};
+export type { GardenProgress, GardenView } from "@commit-garden/shared-types";
 
 export type SyncInput = {
   readonly activityHistoryHash: string;
@@ -46,4 +28,5 @@ export type ApiRequest = {
 export type ApiResponse = {
   readonly status: number;
   readonly body: unknown;
+  readonly headers?: Readonly<Record<string, string | readonly string[]>>;
 };

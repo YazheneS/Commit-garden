@@ -3,12 +3,33 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "main": "src/index.tsx",
   "scripts": {
-    "build": "tsc --build",
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "build": "expo export --platform android --platform ios",
     "typecheck": "tsc --build --noEmit"
   },
   "dependencies": {
     "@commit-garden/garden-renderer": "workspace:*",
-    "@commit-garden/shared-types": "workspace:*"
+    "@commit-garden/shared-types": "workspace:*",
+    "@expo/ui": "~57.0.20",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-navigation/bottom-tabs": "^7.19.2",
+    "@react-navigation/native": "^7.4.1",
+    "expo": "^57.0.25",
+    "expo-secure-store": "^57.0.4",
+    "expo-status-bar": "^57.0.1",
+    "expo-web-browser": "^57.0.3",
+    "expo-widgets": "~57.0.21",
+    "react": "^19.2.3",
+    "react-native": "^0.86.3",
+    "react-native-android-widget": "0.21.0",
+    "react-native-safe-area-context": "^5.7.0",
+    "react-native-screens": "^4.26.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18"
   }
 }
