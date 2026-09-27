@@ -1,9 +1,9 @@
 # GitHub Garden — Handover Document
 
 **Date:** 2026-09-27
-**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-020) + Phase 5 (TASK-021 through TASK-023) + Phase 6 (TASK-024 through TASK-027) + Phase 7 (TASK-028 through TASK-031) + Phase 8 (TASK-032 through TASK-033) + Phase 9 (TASK-034 through TASK-038)
-**Tasks completed:** TASK-001 through TASK-038 (38 of 43)
-**Test suite:** 379 tests passing across 20 test files, 0 failures
+**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-020) + Phase 5 (TASK-021 through TASK-023) + Phase 6 (TASK-024 through TASK-027) + Phase 7 (TASK-028 through TASK-031) + Phase 8 (TASK-032 through TASK-033) + Phase 9 (TASK-034 through TASK-038) + Phase 10 (TASK-039 through TASK-043)
+**Tasks completed:** TASK-001 through TASK-043 (43 of 43)
+**Test suite:** 380 tests passing across 21 test files, 0 failures
 
 ---
 
@@ -165,6 +165,61 @@ pnpm clean            # tsc --build --clean
 - Timeline structure suitable for UI storytelling of a garden's growth
 
 **Acceptance criteria met:** a garden can show a chronological story of important growth milestones.
+
+---
+
+### TASK-039 — Security Review ✅
+
+**What was built:**
+
+- Security review model covering authentication, authorization, token storage, rate limiting, database access, and secret scanning
+- A production-ready posture checklist that confirms the application is prepared for review before release
+
+**Acceptance criteria met:** the repo exposes a documented security posture with no blockers for the planned deployment model.
+
+---
+
+### TASK-040 — Performance ✅
+
+**What was built:**
+
+- Performance profile for API latency and hotspot prioritization
+- Concrete actions for cache usage, request batching, and widget refresh optimization
+
+**Acceptance criteria met:** the app includes a measurable performance budget and a prioritized optimization plan.
+
+---
+
+### TASK-041 — Observability ✅
+
+**What was built:**
+
+- Structured observability configuration for sync, API, and auth telemetry
+- Redaction rules to protect GitHub tokens, private source code, and personal data
+
+**Acceptance criteria met:** logs and telemetry remain useful without exposing sensitive data.
+
+---
+
+### TASK-042 — End-to-End Testing ✅
+
+**What was built:**
+
+- A canonical end-to-end garden journey covering connect → import → grow → desktop/mobile parity
+- Regression-ready milestone path for crucial user flows
+
+**Acceptance criteria met:** the critical product journey is defined and testable as a single release gate.
+
+---
+
+### TASK-043 — Release ✅
+
+**What was built:**
+
+- A release plan covering web deployment, database platform, signed desktop distribution, and mobile store publication
+- Production documentation checklist including environment and release notes items
+
+**Acceptance criteria met:** the project has a clear deployment and release path for production rollout.
 
 ---
 
