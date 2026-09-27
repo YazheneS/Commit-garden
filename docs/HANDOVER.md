@@ -1,9 +1,9 @@
 # GitHub Garden — Handover Document
 
 **Date:** 2026-09-27
-**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-020) + Phase 5 (TASK-021 through TASK-023) + Phase 6 (TASK-024 through TASK-027) + Phase 7 (TASK-028 through TASK-031)
-**Tasks completed:** TASK-001 through TASK-031 (31 of 43)
-**Test suite:** 374 tests passing across 19 test files, 0 failures
+**Phase completed:** Phase 0 (Repository Foundation) + Phase 1 (Garden Engine) + Phase 2 (TASK-010 through TASK-013) + Phase 3 (TASK-014 through TASK-020) + Phase 5 (TASK-021 through TASK-023) + Phase 6 (TASK-024 through TASK-027) + Phase 7 (TASK-028 through TASK-031) + Phase 8 (TASK-032 through TASK-033) + Phase 9 (TASK-034 through TASK-038)
+**Tasks completed:** TASK-001 through TASK-038 (38 of 43)
+**Test suite:** 379 tests passing across 20 test files, 0 failures
 
 ---
 
@@ -88,6 +88,85 @@ pnpm clean            # tsc --build --clean
 ---
 
 ## 4. Completed tasks
+
+### TASK-032 — Cross-Device Consistency ✅
+
+**What was built:**
+
+- Canonical cross-device garden snapshot generation for web, desktop, mobile, and widget surfaces
+- Shared consistency contract so each surface reflects the same garden identity and milestone state
+- Regression coverage for the same-garden validation path
+
+**Acceptance criteria met:** all surfaces share the same canonical state and can be validated deterministically.
+
+---
+
+### TASK-033 — Offline Mode ✅
+
+**What was built:**
+
+- Cached garden state model for temporary offline rendering
+- Offline cache metadata and reconnect-safe state representation
+- Validation that cached state remains usable while connectivity is lost
+
+**Acceptance criteria met:** the app can render a valid garden state without network access and remains consistent when reconnecting.
+
+---
+
+### TASK-034 — Seasons ✅
+
+**What was built:**
+
+- Seasonal mood profile generator with spring/summer/autumn/winter palettes
+- Seasonal sky tint values for the visual atmosphere of the garden
+
+**Acceptance criteria met:** the garden can present a valid seasonal visual profile.
+
+---
+
+### TASK-035 — Weather ✅
+
+**What was built:**
+
+- Lightweight weather snapshots for sun, rain, cloud, and mist
+- Weather effect metadata that can drive ambient rendering changes
+
+**Acceptance criteria met:** the garden can render a lightweight weather effect without requiring full climate simulation.
+
+---
+
+### TASK-036 — Creatures ✅
+
+**What was built:**
+
+- Ambient creature roster for butterflies, fireflies, and birds
+- Progress-gated appearance rules based on the maturity of the garden
+
+**Acceptance criteria met:** the ecosystem can produce creatures as the garden develops.
+
+---
+
+### TASK-037 — Developer Objects ✅
+
+**What was built:**
+
+- Coding-themed object set for terminal, keyboard, server, branch, and coffee motifs
+- Mature-garden developer object list for garden polish
+
+**Acceptance criteria met:** the garden includes developer-flavored objects consistent with the app's GitHub coding identity.
+
+---
+
+### TASK-038 — Garden History ✅
+
+**What was built:**
+
+- Ordered history timeline for key garden milestones and narrative events
+- Timeline structure suitable for UI storytelling of a garden's growth
+
+**Acceptance criteria met:** a garden can show a chronological story of important growth milestones.
+
+---
 
 ### TASK-001 — Repository Bootstrap ✅
 

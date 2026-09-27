@@ -65,7 +65,11 @@ export function shouldRefreshWidget(
   );
 }
 
-export function createMobileSyncPlan() {
+export function createMobileSyncPlan(): {
+  readonly backendUrl: string;
+  readonly shouldPullFreshData: boolean;
+  readonly debounceMs: number;
+} {
   return {
     backendUrl: "/garden",
     shouldPullFreshData: true,

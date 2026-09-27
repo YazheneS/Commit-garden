@@ -22,12 +22,17 @@ export type DesktopNotification = {
   readonly severity: "info" | "success" | "warning";
 };
 
-export function createDesktopShell() {
+export function createDesktopShell(): {
+  readonly isOpen: boolean;
+  readonly launchOnStartup: boolean;
+  readonly hasGitHubConnection: boolean;
+  readonly lastSyncAt: string | null;
+} {
   return {
     isOpen: true,
     launchOnStartup: false,
     hasGitHubConnection: false,
-    lastSyncAt: null as string | null,
+    lastSyncAt: null,
   };
 }
 
